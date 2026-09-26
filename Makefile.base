@@ -5,8 +5,10 @@ AS			:= $(EE_PREFIX)as
 CC			:= $(EE_PREFIX)gcc
 CXX			:= $(EE_PREFIX)g++
 STRIP		:= $(EE_PREFIX)strip
-BIN2S		:= $(PS2SDK)/bin/bin2s
-VCL			:= vcl
+# ps2sdk removed bin2s in 2024. bin2c emits the same symbols (<label> and size_<label>) as C.
+BIN2C		:= $(PS2SDK)/bin/bin2c
+# openvcl and masp ship with ps2dev, so the proprietary Sony vcl is not used.
+VCL			:= openvcl
 VCLPP		:= vclpp
 DVP			:= dvp-as
 
@@ -78,9 +80,9 @@ $(TARGET): $(OBJECTS) $(VCL_OBJECTS) $(VU_OBJECTS_VCL) $(VU_OBJECTS_VSM) $(IRXEM
 
 $(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(IRXEMBEDDEDEXT)
 	@mkdir -p $(dir $@)
-	@rm -f $@.s
-	$(BIN2S) $(shell head -1 $<) $@.s $(shell sed -n '2p' $<)
-	$(AS) $(ASFLAGS) $@.s -o $@
+	@rm -f $@.c
+	$(BIN2C) $(shell head -1 $<) $@.c $(shell sed -n '2p' $<)
+	$(CC) $(CFLAGS) -c $@.c -o $@
 
 $(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(dir $@)

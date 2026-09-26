@@ -1391,7 +1391,7 @@ QSL3@:
 ;//     triangle.
 ;//---------------------------------------------------------
 #macro PerformClipCheck: t_vertex, t_destAddress, t_destAddressOffset
-   clipw.xyz	t_vertex,   t_vertex	
+   clipw.xyz	t_vertex,   t_vertex[w]	
    fcand       VI01,       0x3FFFF
    iaddiu      adcBit,     VI01, 0x7FFF
    isw.w       adcBit,     t_destAddressOffset(t_destAddress)

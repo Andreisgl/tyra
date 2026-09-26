@@ -61,6 +61,13 @@ std::string FileUtils::fromCwd(const std::string& relativePath) {
 
 std::string FileUtils::fromCwd(const char* file) {
   auto cwd = getCwd();
+  // Older ps2sdk returned a device prefix ("host:"), current ps2sdk returns the
+  // whole directory without a trailing separator ("host:/D:/game/bin"). Add the
+  // separator only when the directory needs one.
+  if (!cwd.empty()) {
+    const char last = cwd[cwd.size() - 1];
+    if (last != '/' && last != '\\' && last != ':') cwd += '/';
+  }
   return cwd + file;
 }
 

@@ -58,16 +58,6 @@ vertexLoop:
         lq      stq1,     (stqData)
         lq.xyz  normal1,  (normalData) 
 
-        ;--- Load vertex2
-        lq      vertex2,  1(vertexData)
-        lq      stq2,     1(stqData)
-        lq.xyz  normal2,  1(normalData) 
-
-        ;--- Load vertex3
-        lq      vertex3,  2(vertexData)
-        lq      stq3,     2(stqData)
-        lq.xyz  normal3,  2(normalData) 
-
         ;--- Calculate vertex1
         MatrixMultiplyVertex{ vertex1, mvp, vertex1 }
         PerformClipCheck{ vertex1, destAddress, XYZ2_STORE_OFFSET }
@@ -76,6 +66,16 @@ vertexLoop:
         PerformTexturePerspectiveCorrection{ outputStq1, stq1 }
         CalculateTyraDirectionalLights{ outputColor1, normal1, lightDirections, lightColors, lightMatrix, ambientColor }
         FixColor{ outputColor1 }
+
+        ;--- Store vertex1 
+        sq      outputStq1,     STQ_STORE_OFFSET(destAddress)
+        sq      outputColor1,   RGBA_STORE_OFFSET(destAddress)
+        sq.xyz  vertex1,        XYZ2_STORE_OFFSET(destAddress)
+
+        ;--- Load vertex2
+        lq      vertex2,  1(vertexData)
+        lq      stq2,     1(stqData)
+        lq.xyz  normal2,  1(normalData) 
 
         ;--- Calculate vertex2
         MatrixMultiplyVertex{ vertex2, mvp, vertex2 }
@@ -86,6 +86,16 @@ vertexLoop:
         CalculateTyraDirectionalLights{ outputColor2, normal2, lightDirections, lightColors, lightMatrix, ambientColor }
         FixColor{ outputColor2 }
 
+        ;--- Store vertex2
+        sq      outputStq2,     STQ_STORE_OFFSET+3(destAddress)
+        sq      outputColor2,   RGBA_STORE_OFFSET+3(destAddress)
+        sq.xyz  vertex2,        XYZ2_STORE_OFFSET+3(destAddress)
+
+        ;--- Load vertex3
+        lq      vertex3,  2(vertexData)
+        lq      stq3,     2(stqData)
+        lq.xyz  normal3,  2(normalData) 
+
         ;--- Calculate vertex3
         MatrixMultiplyVertex{ vertex3, mvp, vertex3 }
         PerformClipCheck{ vertex3, destAddress, XYZ2_STORE_OFFSET+6 }
@@ -94,16 +104,6 @@ vertexLoop:
         PerformTexturePerspectiveCorrection{ outputStq3, stq3 }
         CalculateTyraDirectionalLights{ outputColor3, normal3, lightDirections, lightColors, lightMatrix, ambientColor }
         FixColor{ outputColor3 }
-
-        ;--- Store vertex1 
-        sq      outputStq1,     STQ_STORE_OFFSET(destAddress)
-        sq      outputColor1,   RGBA_STORE_OFFSET(destAddress)
-        sq.xyz  vertex1,        XYZ2_STORE_OFFSET(destAddress)
-
-        ;--- Store vertex2
-        sq      outputStq2,     STQ_STORE_OFFSET+3(destAddress)
-        sq      outputColor2,   RGBA_STORE_OFFSET+3(destAddress)
-        sq.xyz  vertex2,        XYZ2_STORE_OFFSET+3(destAddress)
 
         ;--- Store vertex3
         sq      outputStq3,     STQ_STORE_OFFSET+6(destAddress)
