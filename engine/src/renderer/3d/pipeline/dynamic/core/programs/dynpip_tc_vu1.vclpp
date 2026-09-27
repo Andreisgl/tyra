@@ -19,7 +19,7 @@
 .init_vf_all
 .init_vi_all
 
-#include "src/renderer/3d/pipeline/shared/vcl_sml.i"
+#include "src/renderer/3d/pipeline/shared/vu_macros.i"
 #include "src/renderer/3d/pipeline/shared/tyra_macros.i"
 #include "inc/renderer/3d/pipeline/dynamic/core/programs/dynpip_vu1_shared_defines.h"
 
