@@ -1,8 +1,11 @@
 # syntax=docker/dockerfile:1
-FROM h4570/tyra
 
-RUN apt-get update
-RUN apt-get install git -y
+# The Tyra toolchain image is built once, from the Tyra repository (it is not
+# published anywhere):
+#   cd <tyra repository> && docker compose build      (or: docker build -t tyra .)
+# It already contains git, make, rsync, the PS2DEV toolchain and vclpp.
+ARG TYRA_IMAGE=tyra
+FROM ${TYRA_IMAGE}
 
 WORKDIR /src
 CMD ["/bin/bash"]

@@ -14,9 +14,12 @@
 1. Download [intellisense package](https://github.com/h4570/tyra/releases) and unzip it somewhere in your computer.
 2. Open terminal in your favourite repositories directory and execute: 
 ```
-docker pull h4570/tyra
 git clone https://github.com/h4570/tyra.git
+cd tyra
+docker compose build
 ```
+   This builds the toolchain image locally (about a minute): the official PS2DEV image,
+   pinned by digest in the `Dockerfile`, plus `vclpp`. It is tagged `tyra`.
 3. Download the [assets.zip](https://github.com/h4570/tyra/releases) file and unzip it into the tyra directory
 4. Open `VSCode` and open previously cloned directory.
 5. In `VSCode` open `.vscode/configurations/windows-docker` and copy configuration files into `.vscode/`

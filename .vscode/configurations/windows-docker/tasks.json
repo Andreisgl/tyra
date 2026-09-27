@@ -65,7 +65,7 @@
         {
             "type": "shell",
             "label": "Open PS2 output logger",
-            "command": "docker stop ps2-logs || $true && docker run -t --rm --name=ps2-logs -p ${input:local2Ip}:18194:18194/udp h4570/tyra sh -c 'ps2client -h ${input:ps2Ip} listen'",
+            "command": "docker stop ps2-logs || $true && docker run -t --rm --name=ps2-logs -p ${input:local2Ip}:18194:18194/udp tyra sh -c 'ps2client -h ${input:ps2Ip} listen'",
             "runOptions": {
                 "instanceLimit": 1
             },

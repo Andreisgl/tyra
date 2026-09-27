@@ -27,9 +27,9 @@ RUN git clone https://github.com/glampert/vclpp.git /vclpp \
 
 FROM ${PS2DEV_IMAGE}
 
-# GNU tools Tyra's Makefile.base uses (find, sed, fmt, cp), git, and the C++ runtime
-# that openvcl and vclpp need.
-RUN apk add --no-cache bash make git coreutils findutils sed grep libstdc++ libgcc
+# GNU tools Tyra's Makefile.base uses (find, sed, fmt, cp), git, rsync (the VS Code tasks
+# copy sources into the container with it), and the C++ runtime that openvcl and vclpp need.
+RUN apk add --no-cache bash make git rsync coreutils findutils sed grep libstdc++ libgcc
 
 COPY --from=vclpp-build /vclpp/vclpp /usr/local/bin/vclpp
 
