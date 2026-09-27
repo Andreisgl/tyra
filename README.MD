@@ -136,7 +136,7 @@ Distributed under the Apache License 2.0 License. See `LICENSE` for more informa
 
 * [PS2DEV](https://github.com/ps2dev/ps2dev)  
 * [VCLPP](https://github.com/glampert/vclpp)  
-* Sony VCL
+* [OpenVCL](https://github.com/ps2dev/openvcl) (built by PS2DEV)
 
 ## Acronyms 
 * EE (Emotion Engine) - whole set of processors and subsystems that make up the PlayStation 2 
