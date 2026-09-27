@@ -1,53 +1,37 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:20.04
 
-# Install necessary packages for PS2DEV and VCLPP.
-RUN apt-get update
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get install -y git make g++ texinfo bison flex gettext libgmp3-dev \
-    libmpfr-dev libmpc-dev gcc binutils cmake wget patch zlib1g-dev libgsl-dev \
-    unzip
+# Toolchain image for building Tyra: the official PS2DEV image plus vclpp.
+#
+# The base is pinned by digest, so the compiler (GCC 15.2), ps2sdk, bin2c, openvcl
+# and dvp-as are exactly the ones this fork was ported and tested against. To move to
+# a newer PS2DEV, pull ps2dev/ps2dev, read the new digest from the output, replace it
+# below and rebuild the engine.
+#
+# Tyra's VU programs (engine/src/**/*.vclpp) are built with
+#   vclpp -> openvcl -> dvp-as
+# openvcl ships with PS2DEV (its image lacks the C++ runtime, added below); vclpp is
+# not part of PS2DEV, so it is built here from a pinned commit. Nothing proprietary
+# is used.
+#
+#   docker build -t tyra .
 
-# Setup PS2DEV env
-ENV PS2DEV /usr/local/ps2dev
-RUN mkdir -p $PS2DEV
-RUN chown -R $USER: $PS2DEV
-ENV PS2SDK $PS2DEV/ps2sdk
-ENV GSKIT $PS2DEV/gsKit
-ENV PATH $PATH:${PS2DEV}/bin:${PS2DEV}/ee/bin:${PS2DEV}/iop/bin:${PS2DEV}/dvp/bin:${PS2SDK}/bin
+ARG PS2DEV_IMAGE=ps2dev/ps2dev@sha256:1511fde1e42e2c8c192e08a308d9c90d3d69613f6c8022ec71aac7202d477336
 
-# Compile PS2DEV (build-all.sh also builds openvcl and masp, the VU tools Tyra uses)
-RUN mkdir -p /temp/ps2dev
-RUN git clone https://github.com/ps2dev/ps2dev.git /temp/ps2dev
-WORKDIR "/temp/ps2dev"
-RUN ./build-all.sh
-
-# Compile VCLPP
-RUN mkdir -p /temp/vclpp
-RUN git clone https://github.com/glampert/vclpp.git /temp/vclpp
-WORKDIR "/temp/vclpp"
-RUN make
+FROM ${PS2DEV_IMAGE} AS vclpp-build
+RUN apk add --no-cache g++ make git
+RUN git clone https://github.com/glampert/vclpp.git /vclpp \
+    && git -C /vclpp checkout 6d787b640efaf793f5993ded336951e4136dc3d3 \
+    && make -C /vclpp
 
 # ------------------------------------------------------------------------------
 
-# Start from clean image
-FROM ubuntu:20.04
+FROM ${PS2DEV_IMAGE}
 
-# Set ENV variables
-ENV PS2DEV /usr/local/ps2dev
-ENV PS2SDK $PS2DEV/ps2sdk
-ENV PATH $PATH:${PS2DEV}/bin:${PS2DEV}/ee/bin:${PS2DEV}/iop/bin:${PS2DEV}/dvp/bin:${PS2SDK}/bin
+# GNU tools Tyra's Makefile.base uses (find, sed, fmt, cp), git, and the C++ runtime
+# that openvcl and vclpp need.
+RUN apk add --no-cache bash make git coreutils findutils sed grep libstdc++ libgcc
 
-# Copy stuff from previous stage
-COPY --from=0 ${PS2DEV} ${PS2DEV}
-COPY --from=0 /temp/vclpp/vclpp /usr/bin/vclpp
-
-# Install packages for Tyra (make, libmpc, psmisc)
-RUN apt-get update
-RUN apt-get install -y make rsync libmpc-dev psmisc
-
-# Set chmod
-RUN chmod 755 /usr/bin/vclpp
+COPY --from=vclpp-build /vclpp/vclpp /usr/local/bin/vclpp
 
 WORKDIR /src
 CMD ["/bin/bash"]
