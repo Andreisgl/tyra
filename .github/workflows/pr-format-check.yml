@@ -9,7 +9,7 @@ on:
       - '**.'
       - '**.h'
       - './engine/inc/tyra'
-      - '.github/workflows/check-format.yml'
+      - '.github/workflows/pr-format-check.yml'
       - '.clang-format'
   pull_request:
     paths:
@@ -18,7 +18,7 @@ on:
       - '**.'
       - '**.h'
       - './engine/inc/tyra'
-      - '.github/workflows/check-format.yml'
+      - '.github/workflows/pr-format-check.yml'
       - '.clang-format'
 
 jobs:
